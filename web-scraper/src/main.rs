@@ -1,9 +1,14 @@
+use reqwest::{blocking, Error};
+
+// Rabe Bike: https://www.rabe-bike.de/de/cube-attain-slx-grey-n-black-2023
+
 fn main() {
-    let response =
-        reqwest::blocking::get("https://www.rabe-bike.de/de/cube-attain-slx-grey-n-black-2023")
-            .unwrap()
-            .text()
-            .unwrap();
+    let response;
+
+    match get_website("https://www.rabe-bike.de/de/cube-attain-slx-grey-n-black-2023") {
+        Ok(res) => response = res,
+        Err(err) => panic!("Error: {}", err),
+    }
 
     let document = scraper::Html::parse_document(&response);
     let price_selector = scraper::Selector::parse(
@@ -14,8 +19,6 @@ fn main() {
 
     let price: Vec<String> = prices
         .filter(|p| {
-            println!("{}", p);
-
             if p.contains("€") {
                 return true;
             }
@@ -35,4 +38,10 @@ fn main() {
     });
 
     println!("{:?}", isolated_price);
+}
+
+fn get_website(url: &str) -> Result<String, Error> {
+    let response = blocking::get(url)?.text()?;
+
+    Ok(response)
 }
