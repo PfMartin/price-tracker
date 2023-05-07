@@ -23,5 +23,16 @@ fn main() {
         })
         .collect();
 
-    println!("{:?}", price[0]);
+    let p = price[0].trim();
+
+    let new = p.replace(".", "").replace(",", ".").replace("\n", "");
+
+    let mut isolated_price = 0.0;
+
+    new.split_whitespace().for_each(|s| match s.parse::<f64>() {
+        Ok(f) => isolated_price = f,
+        Err(_) => (),
+    });
+
+    println!("{:?}", isolated_price);
 }
